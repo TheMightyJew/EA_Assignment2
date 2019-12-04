@@ -7,27 +7,27 @@ from deap import base
 from deap import creator
 from deap import tools
 
-NB_QUEENS = 8
-
 first_row =  [0, 0, 0, 0, 0, 0, 0]
 second_row = [1, 1, 0, 1, 1, 1, 0]
 third_row =  [0, 1, 0, 1, 0, 1, 1]
 fourth_row = [0, 1, 1, 1, 1, 1, 0]
 fifth_row =  [0, 0, 0, 0, 0, 0, 0]
 enter_state = (1, 0)
-exit_state = (2, 6)
-'''
-first_row =  [1, 0, 1, 1, 1, 1, 1]
-second_row = [1, 0, 0, 0, 0, 0, 1]
-third_row =  [1, 0, 0, 0, 0, 0, 1]
-fourth_row = [1, 0, 0, 0, 0, 0, 1]
-fifth_row =  [1, 1, 1, 1, 1, 1, 1]
-enter_state = (0, 0)
-exit_state = (0, 2)
-'''
-maze = [fifth_row, second_row, third_row, fourth_row, fifth_row]
+exit_state =  (2, 6)
+
+first_row1 =  [1, 0, 1, 1, 1, 1, 1]
+second_row1 = [1, 0, 0, 0, 0, 0, 1]
+third_row1 =  [1, 0, 1, 1, 1, 0, 1]
+fourth_row1 = [1, 0, 0, 0, 1, 0, 1]
+fifth_row1 =  [1, 1, 1, 1, 1, 1, 1]
+enter_state1 = (0, 0)
+exit_state1 =  (0, 2)
 
 
+assignment_maze = [first_row, second_row, third_row, fourth_row, fifth_row]
+challenge_maze = [first_row1, second_row1, third_row1, fourth_row1, fifth_row1]
+
+maze = assignment_maze
 
 def move_up(point):
     new_point = (point[0]-1, point[1])
@@ -84,7 +84,7 @@ def number_of_blanks():
 
 def initiate_first_generation():
     path = []
-    num_of_blanks = int(number_of_blanks() * 1.5)
+    num_of_blanks = min(len(maze)*len(maze[0]), int(number_of_blanks()*1.5))
     for i in range(num_of_blanks-2):
         while True:
             random_action = random.randrange(4)
@@ -137,6 +137,16 @@ def mut_shuffle(individual):
     return individual,
     '''
     random_index = random.randrange(len(individual))
+    for i in range(random_index,len(individual)-1):
+        individual[i] = individual[i+1]
+    while True:
+        random_action = random.randrange(4)
+        if opposite_action(random_action, individual[len(individual)-2]):
+            continue
+        else:
+            individual[len(individual)-1] = random_action
+            return individual,
+    '''
     while True:
         random_action = random.randrange(4)
         if random_action == individual[random_index]:
@@ -148,7 +158,7 @@ def mut_shuffle(individual):
         else:
             individual[random_index] = random_action
             return individual,
-
+    '''
 
 def get_manhattan_distance(first_point, second_point):
     heuristic_manhattan = 0
@@ -218,18 +228,19 @@ def num_of_dups(path):
 
 
 def eval_path(path):
+    closed_list = []
     point = enter_state
+    closed_list.append(point)
     count = 0
-    grade = 0
     for action in path:
-        new_point = move_action_dict[move_dict[action]](point)
-        if point == new_point:
-            count += 1
-        point = new_point
+        point = move_action_dict[move_dict[action]](point)
+        if point in closed_list:
+            count += number_of_blanks()
+        else:
+            closed_list.append(point)
         count += 1
         if point == exit_state:
-            grade = count
-            return grade,
+            break
     grade = count + get_manhattan_distance(point, exit_state)
     return grade,
 
@@ -273,9 +284,9 @@ def main():
     stats.register("Best", numpy.min)
     stats.register("Worst", numpy.max)
 
-    start_time = time.time()
+    start_time = time.time();
 
-    algorithms.eaSimple(pop, toolbox, cxpb=0.7, mutpb=0.1, ngen=2000, stats=stats, halloffame=hof, verbose=True)
+    algorithms.eaSimple(pop, toolbox, cxpb = 0.7, mutpb = 0.001, ngen=1000, stats=stats, halloffame=hof, verbose=True)
 
     elapsed_time = time.time() - start_time
     print('%.2f  seconds' % elapsed_time)
