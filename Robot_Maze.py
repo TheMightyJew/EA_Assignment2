@@ -14,18 +14,20 @@ fourth_row = [0, 1, 1, 1, 1, 1, 0]
 fifth_row =  [0, 0, 0, 0, 0, 0, 0]
 enter_state = (1, 0)
 exit_state =  (2, 6)
-'''
-first_row =  [1, 0, 1, 1, 1, 1, 1]
-second_row = [1, 0, 0, 0, 0, 0, 1]
-third_row =  [1, 0, 1, 1, 1, 0, 1]
-fourth_row = [1, 0, 0, 0, 1, 0, 1]
-fifth_row =  [1, 1, 1, 1, 1, 1, 1]
-enter_state = (0, 0)
-exit_state =  (0, 2)
-'''
-maze = [first_row, second_row, third_row, fourth_row, fifth_row]
+
+first_row1 =  [1, 0, 1, 1, 1, 1, 1]
+second_row1 = [1, 0, 0, 0, 0, 0, 1]
+third_row1 =  [1, 0, 1, 1, 1, 0, 1]
+fourth_row1 = [1, 0, 0, 0, 1, 0, 1]
+fifth_row1 =  [1, 1, 1, 1, 1, 1, 1]
+enter_state1 = (0, 0)
+exit_state1 =  (0, 2)
 
 
+assignment_maze = [first_row, second_row, third_row, fourth_row, fifth_row]
+challenge_maze = [first_row1, second_row1, third_row1, fourth_row1, fifth_row1]
+
+maze = assignment_maze
 
 def move_up(point):
     new_point = (point[0]-1, point[1])
