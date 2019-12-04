@@ -29,6 +29,7 @@ challenge_maze = [first_row1, second_row1, third_row1, fourth_row1, fifth_row1]
 
 maze = assignment_maze
 
+
 def move_up(point):
     new_point = (point[0]-1, point[1])
     if legal_point(new_point):
@@ -103,25 +104,6 @@ def in_map(point):
         return True
 
 
-'''
-def get_random_neighbor(rows, cols, point):
-    while True:
-        random_direction = random.randrange(4)
-        if random_direction == 0:
-            neighbor = (point[0]-1, point[1])
-        elif random_direction == 1:
-            neighbor = (point[0]+1, point[1])
-        elif random_direction == 2:
-            neighbor = (point[0], point[1]-1)
-        elif random_direction == 3:
-            neighbor = (point[0], point[1]+1)
-        if (not in_map(rows, cols, neighbor)) or is_wall(neighbor):
-            continue
-        else:
-            return neighbor
-'''
-
-
 def opposite_action(action, compare_action):
     if (action+compare_action) % 4 == 1:
         return True
@@ -130,12 +112,6 @@ def opposite_action(action, compare_action):
 
 
 def mut_shuffle(individual):
-    '''
-    random_index = random.randrange(len(individual)-2) + 1
-    random_point = get_random_neighbor(len(maze), len(maze[0]), individual[random_index - 1])
-    individual[random_index] = random_point
-    return individual,
-    '''
     random_index = random.randrange(len(individual))
     for i in range(random_index,len(individual)-1):
         individual[i] = individual[i+1]
@@ -146,19 +122,7 @@ def mut_shuffle(individual):
         else:
             individual[len(individual)-1] = random_action
             return individual,
-    '''
-    while True:
-        random_action = random.randrange(4)
-        if random_action == individual[random_index]:
-            continue
-        elif random_index > 0 and opposite_action(random_action, individual[random_index - 1]):
-            continue
-        elif random_index < len(individual)-1 and opposite_action(random_action, individual[random_index + 1]):
-            continue
-        else:
-            individual[random_index] = random_action
-            return individual,
-    '''
+
 
 def get_manhattan_distance(first_point, second_point):
     heuristic_manhattan = 0
@@ -214,50 +178,23 @@ def count_wall_faults(path):
     return count
 
 
-def num_of_dups(path):
-    dic ={}
-    for loc in path:
-        if loc in dic:
-            dic[loc] = dic[loc]+1
-        else:
-            dic[loc] = 0
-    sum = 0
-    for key in dic:
-        sum += dic[key]
-    return sum
-
-
 def eval_path(path):
     closed_list = []
     point = enter_state
     closed_list.append(point)
     count = 0
+    penalty = 0
     for action in path:
         point = move_action_dict[move_dict[action]](point)
         if point in closed_list:
-            count += number_of_blanks()
+            penalty += number_of_blanks()
         else:
             closed_list.append(point)
         count += 1
         if point == exit_state:
             break
-    grade = count + get_manhattan_distance(point, exit_state)
+    grade = count + penalty + get_manhattan_distance(point, exit_state)
     return grade,
-
-
-'''
-grade = 0
-path_length = real_path_length(path)
-neighbors_faults = count_neighbors_faults(path, path_length)
-wall_faults = count_wall_faults(path)
-grade += path_length
-num_of_blanks = number_of_blanks(maze)
-grade += num_of_blanks * neighbors_faults
-grade += num_of_blanks * wall_faults
-dups = num_of_dups(path)
-grade += dups
-return grade,
-'''
 
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -275,6 +212,33 @@ toolbox.register("select", tools.selTournament, tournsize=3)
 #toolbox.register("select", tools.selRoulette)
 
 
+def print_solution(actions):
+    count = 0
+    path = []
+    direction = []
+    point = enter_state
+    for i in range(len(actions)):
+        path.append(point)
+        if point == exit_state:
+            break
+        direction.append(move_dict[actions[i]])
+        point = move_action_dict[move_dict[actions[i]]](point)
+    print('Solution:')
+    print(direction)
+    print('Path:')
+    print(path)
+    print('Maze:')
+    for row_num in range(len(maze)):
+        row = ''
+        for col_num in range(len(maze[0])):
+            if (row_num, col_num) in path:
+                row += '$'
+            else:
+                row += str(maze[row_num][col_num])
+            row += ' '
+        print(row)
+
+
 def main():
     pop = toolbox.population(n=100)
     hof = tools.HallOfFame(1)
@@ -290,7 +254,7 @@ def main():
 
     elapsed_time = time.time() - start_time
     print('%.2f  seconds' % elapsed_time)
-    print(hof)
+    print_solution(hof[0])
 
     return pop, stats, hof
 
