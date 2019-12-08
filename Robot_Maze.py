@@ -12,23 +12,24 @@ second_row = [1, 1, 0, 1, 1, 1, 0]
 third_row =  [0, 1, 0, 1, 0, 1, 1]
 fourth_row = [0, 1, 1, 1, 1, 1, 0]
 fifth_row =  [0, 0, 0, 0, 0, 0, 0]
-enter_state = (1, 0)
-exit_state =  (2, 6)
+enter_state_assignment = (1, 0)
+exit_state_assignment =  (2, 6)
 
 first_row1 =  [1, 0, 1, 1, 1, 1, 1]
 second_row1 = [1, 0, 0, 0, 0, 0, 1]
 third_row1 =  [1, 0, 1, 1, 1, 0, 1]
 fourth_row1 = [1, 0, 0, 0, 1, 0, 1]
 fifth_row1 =  [1, 1, 1, 1, 1, 1, 1]
-enter_state1 = (0, 0)
-exit_state1 =  (0, 2)
+enter_state_challenge = (0, 0)
+exit_state_challenge =  (0, 2)
 
 
 assignment_maze = [first_row, second_row, third_row, fourth_row, fifth_row]
 challenge_maze = [first_row1, second_row1, third_row1, fourth_row1, fifth_row1]
 
 maze = assignment_maze
-
+enter_state = enter_state_assignment
+exit_state = exit_state_assignment
 
 def move_up(point):
     new_point = (point[0]-1, point[1])
@@ -209,7 +210,6 @@ toolbox.register("evaluate", eval_path)
 toolbox.register("mate", tools.cxOnePoint)
 toolbox.register("mutate", mut_shuffle)
 toolbox.register("select", tools.selTournament, tournsize=3)
-#toolbox.register("select", tools.selRoulette)
 
 
 def print_solution(actions):
@@ -250,7 +250,7 @@ def main():
 
     start_time = time.time();
 
-    algorithms.eaSimple(pop, toolbox, cxpb = 0.7, mutpb = 0.001, ngen=1000, stats=stats, halloffame=hof, verbose=True)
+    algorithms.eaSimple(pop, toolbox, cxpb = 0.7, mutpb = 0.01, ngen=500, stats=stats, halloffame=hof, verbose=True)
 
     elapsed_time = time.time() - start_time
     print('%.2f  seconds' % elapsed_time)
